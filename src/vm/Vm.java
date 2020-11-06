@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.MissingFormatArgumentException;
 
 
 
@@ -37,7 +38,7 @@ public class Vm {
 //		}
 //		
 		ArrayList<String> data = new ArrayList<>();
-		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput1.txt");
+		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput2.txt");
 		
 //		System.out.println(data);
 		
@@ -48,21 +49,24 @@ public class Vm {
 		// this is the current page table being used 
 		ArrayList<PageTableEntry> currentPageTable = new ArrayList<>();
 	
+		int miss = 0;
+		int compulsoryMiss = 0;
+		int hit = 0;
 		
 		for(String s : data) {
 			String[] line = s.split(" ");
 			if(line[0].equals("new")) {
-				System.out.println("***************************\n new page table create at index: " + line[1]);
+				System.out.println("**********************************\n new page table create at index: " + line[1]);
 				ArrayList<PageTableEntry> pageTable = new ArrayList<>();
 				for(int i=0; i<64;i++) {
 					pageTable.add(new PageTableEntry(false, false));
 				}
 				pageTables.add(pageTable);
-				System.out.println(" create a page table with size: " + Integer.toString(pageTable.size()));
+//				System.out.println(" create a page table with size: " + Integer.toString(pageTable.size()));
 			} else if (line[0].equals("switch")) {
-				System.out.println("***************************\n switch page table to index: " + line[1]);
+				System.out.println("**********************************\n switch page table to index: " + line[1]);
 				currentPageTable = pageTables.get(Integer.parseInt(line[1]));
-				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
+//				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
 			} else if (line[0].equals("access")) {
 //				System.out.println("access attempt: " + line[1]);
 				
@@ -77,14 +81,33 @@ public class Vm {
 //				
 				// we can get the page index simply with >> ... i did too much extra work 
 				int pageIndex = Integer.parseInt(line[1])>>10;
-				System.out.println(pageIndex);
+				System.out.println("page index is " + Integer.toString(pageIndex));
 				
+				PageTableEntry currentPageTableEntry = currentPageTable.get(pageIndex);
+				System.out.println(currentPageTableEntry.valid);
+				
+				if(!currentPageTableEntry.valid && !currentPageTableEntry.inMemory) {
+					if(!currentPageTableEntry.valid) {
+						miss ++;
+						compulsoryMiss ++;
+						currentPageTableEntry.valid = true; // when I set this, I'm changing the values in the list? It seems so 
+					} else if (!currentPageTableEntry.inMemory) {
+						miss ++;
+						currentPageTableEntry.inMemory = true;
+					}
+				} else {
+					hit ++;
+				}
+				
+				System.out.println(miss);
+				System.out.println(compulsoryMiss);
+				System.out.println(hit);
 				
 				
 				
 //				 ;
 			} else {
-				System.out.println("Unknown token");
+				System.out.println("Unknown token read ");
 			}
 			
 			
@@ -94,6 +117,11 @@ public class Vm {
 		
 		System.out.println("Total page tables: " + Integer.toString(pageTables.size()));
 		
+		// it looks like the original page table is not changed... but it works above...
+//		for(PageTableEntry pageTableEntry : pageTables.get(3)) {
+//			System.out.println(pageTableEntry.inMemory);
+//		}
+//		
 	
 		
 	}
