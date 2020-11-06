@@ -65,14 +65,18 @@ public class Vm {
 				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
 			} else if (line[0].equals("access")) {
 //				System.out.println("access attempt: " + line[1]);
-				String address = Integer.toBinaryString(Integer.parseInt(line[1]));
-				String temp = "0".repeat(16 - address.length());
-				address = temp + address; // make the length of string 16 
-				String pageIndexBinaString = address.substring(0, 6);
-				int pageIndex = Integer.valueOf(pageIndexBinaString, 2);
 				
-				System.out.println(address);
-				System.out.println(pageIndexBinaString);
+//				String address = Integer.toBinaryString(Integer.parseInt(line[1])); // address to binary 
+//				String temp = "0".repeat(16 - address.length());
+//				address = temp + address; // make the length of string 16 
+//				String pageIndexBinaString = address.substring(0, 6); // get first 6 bits as page index 
+//				int pageIndex = Integer.valueOf(pageIndexBinaString, 2); // convert page index to decimal 				
+//				System.out.println(address);
+//				System.out.println(pageIndexBinaString);
+//				System.out.println(pageIndex);
+//				
+				// we can get the page index simply with >> ... i did too much extra work 
+				int pageIndex = Integer.parseInt(line[1])>>10;
 				System.out.println(pageIndex);
 				
 				
