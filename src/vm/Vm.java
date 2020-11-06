@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
+
 public class Vm {
 
 	private static ArrayList<String> readFile(String file) throws IOException {	
@@ -36,7 +37,7 @@ public class Vm {
 //		}
 //		
 		ArrayList<String> data = new ArrayList<>();
-		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput.txt");
+		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput1.txt");
 		
 //		System.out.println(data);
 		
@@ -58,13 +59,26 @@ public class Vm {
 				}
 				pageTables.add(pageTable);
 				System.out.println(" create a page table with size: " + Integer.toString(pageTable.size()));
-				
 			} else if (line[0].equals("switch")) {
 				System.out.println("***************************\n switch page table to index: " + line[1]);
 				currentPageTable = pageTables.get(Integer.parseInt(line[1]));
 				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
 			} else if (line[0].equals("access")) {
 //				System.out.println("access attempt: " + line[1]);
+				String address = Integer.toBinaryString(Integer.parseInt(line[1]));
+				String temp = "0".repeat(16 - address.length());
+				address = temp + address; // make the length of string 16 
+				String pageIndexBinaString = address.substring(0, 6);
+				int pageIndex = Integer.valueOf(pageIndexBinaString, 2);
+				
+				System.out.println(address);
+				System.out.println(pageIndexBinaString);
+				System.out.println(pageIndex);
+				
+				
+				
+				
+//				 ;
 			} else {
 				System.out.println("Unknown token");
 			}
