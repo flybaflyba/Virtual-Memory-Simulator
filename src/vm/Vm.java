@@ -29,10 +29,6 @@ public class Vm {
 		// TODO Auto-generated method stub
 		System.out.println("Aloha Virtual Memory");
 		
-		PageTableEntry pte = new PageTableEntry(false, false);
-		
-		System.out.println(pte.inMemory);
-		
 		Memory memory = new Memory();
 		
 //		for(PageTableEntry p : memory.pageTableEntries) {
@@ -40,37 +36,47 @@ public class Vm {
 //		}
 //		
 		ArrayList<String> data = new ArrayList<>();
-		data = readFile("C:/fall2020classes/cs415/VirtualMemory/bin/vm/VMInput1.txt");
+		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput.txt");
 		
 //		System.out.println(data);
 		
+		// this is a collection of all page tables 
 		ArrayList<ArrayList<PageTableEntry>> pageTables = new ArrayList<>();
-		pageTables.add(null);
+		pageTables.add(null); // add a null at index 0, so that we can just use the number after new to be the index of the new page table
+		
+		// this is the current page table being used 
+		ArrayList<PageTableEntry> currentPageTable = new ArrayList<>();
+	
 		
 		for(String s : data) {
 			String[] line = s.split(" ");
 			if(line[0].equals("new")) {
-				System.out.println("***************************\n new page table create at index before: " + line[1]);
+				System.out.println("***************************\n new page table create at index: " + line[1]);
 				ArrayList<PageTableEntry> pageTable = new ArrayList<>();
 				for(int i=0; i<64;i++) {
 					pageTable.add(new PageTableEntry(false, false));
 				}
 				pageTables.add(pageTable);
-				System.out.println("create a page table with size: " + Integer.toString(pageTable.size()));
+				System.out.println(" create a page table with size: " + Integer.toString(pageTable.size()));
 				
 			} else if (line[0].equals("switch")) {
-				System.out.println("***************************\n switch page table to index before: " + line[1]);
+				System.out.println("***************************\n switch page table to index: " + line[1]);
+				currentPageTable = pageTables.get(Integer.parseInt(line[1]));
+				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
 			} else if (line[0].equals("access")) {
-				System.out.println("access attempt: " + line[1]);
+//				System.out.println("access attempt: " + line[1]);
 			} else {
 				System.out.println("Unknown token");
 			}
+			
+			
+			
 			
 		}
 		
 		System.out.println("Total page tables: " + Integer.toString(pageTables.size()));
 		
-		System.out.println(pageTables.get(1).get(0));
+	
 		
 	}
 
