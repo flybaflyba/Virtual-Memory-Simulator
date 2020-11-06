@@ -10,9 +10,13 @@ public class Vm {
 		
 		System.out.println(pte.inMemory);
 		
+		Memory memory = new Memory();
 		
 		
-
+		for(PageTableEntry p:memory.pageTableEntries) {
+			System.out.println(p);
+		}
+		
 	}
 
 }
