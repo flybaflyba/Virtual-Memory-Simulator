@@ -38,7 +38,7 @@ public class Vm {
 //		}
 //		
 		ArrayList<String> data = new ArrayList<>();
-		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput2.txt");
+		data = readFile("C:/fall2020classes/cs415/VirtualMemory/VMInput.txt");
 		
 //		System.out.println(data);
 		
@@ -49,12 +49,15 @@ public class Vm {
 		// this is the current page table being used 
 		ArrayList<PageTableEntry> currentPageTable = new ArrayList<>();
 	
+		int access = 0;
+		int hit = 0;
 		int miss = 0;
 		int compulsoryMiss = 0;
-		int hit = 0;
+		
 		
 		for(String s : data) {
 			String[] line = s.split(" ");
+			System.out.println("-------------------------------------------------");
 			if(line[0].equals("new")) {
 				System.out.println("**********************************\n new page table create at index: " + line[1]);
 				ArrayList<PageTableEntry> pageTable = new ArrayList<>();
@@ -68,6 +71,7 @@ public class Vm {
 				currentPageTable = pageTables.get(Integer.parseInt(line[1]));
 //				System.out.println(" (find current page table in page tables list:) \n we are at page table index: " + Integer.toString(pageTables.indexOf(currentPageTable)));
 			} else if (line[0].equals("access")) {
+				access ++;
 //				System.out.println("access attempt: " + line[1]);
 				
 //				String address = Integer.toBinaryString(Integer.parseInt(line[1])); // address to binary 
@@ -83,42 +87,46 @@ public class Vm {
 				int pageIndex = Integer.parseInt(line[1])>>10;
 				System.out.println("page index is " + Integer.toString(pageIndex));
 				
-				PageTableEntry currentPageTableEntry = currentPageTable.get(pageIndex);
-				System.out.println(currentPageTableEntry.valid);
 				
-				if(!currentPageTableEntry.valid && !currentPageTableEntry.inMemory) {
-					if(!currentPageTableEntry.valid) {
-						miss ++;
-						compulsoryMiss ++;
-						currentPageTableEntry.valid = true; // when I set this, I'm changing the values in the list? It seems so 
-					} else if (!currentPageTableEntry.inMemory) {
+				PageTableEntry currentPageTableEntry = currentPageTable.get(pageIndex);
+				
+				System.out.println(currentPageTableEntry.valid);
+				System.out.println(currentPageTableEntry.inMemory);
+				
+				if(!currentPageTableEntry.valid) {
+					miss ++;
+					compulsoryMiss ++;
+					currentPageTableEntry.valid = true; 
+					currentPageTableEntry.inMemory = true;
+					memory.getFreePageFrame(currentPageTableEntry); // kick out old one
+				} else {
+					if (!currentPageTableEntry.inMemory) {
 						miss ++;
 						currentPageTableEntry.inMemory = true;
+						memory.getFreePageFrame(currentPageTableEntry); // kick out old one 
+					} else {
+						hit ++;
+					
 					}
-				} else {
-					hit ++;
 				}
 				
-				System.out.println(miss);
-				System.out.println(compulsoryMiss);
-				System.out.println(hit);
+				System.out.println("Access: " + Integer.toString(access));
+				System.out.println("Hits: " + Integer.toString(hit));
+				System.out.println("Misses: " + Integer.toString(miss));
+				System.out.println("Compulsory Misses: " + Integer.toString(compulsoryMiss));
 				
+
 				
-				
-//				 ;
 			} else {
 				System.out.println("Unknown token read ");
 			}
 			
 			
-			
-			
 		}
 		
-		System.out.println("Total page tables: " + Integer.toString(pageTables.size()));
+		System.out.println("**********************************\n Total page tables: " + Integer.toString(pageTables.size()));
 		
-		// it looks like the original page table is not changed... but it works above...
-//		for(PageTableEntry pageTableEntry : pageTables.get(3)) {
+//		for(PageTableEntry pageTableEntry : pageTables.get(2)) {
 //			System.out.println(pageTableEntry.inMemory);
 //		}
 //		
